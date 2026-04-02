@@ -33,12 +33,12 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
     
     <header class="header">
       <div class="header-left">
-        <img class="logo" src="img/logo.png" alt="Logo" />
-        <img class="texto" src="img/tipografia.png" alt="MediStock" />
+        <img class="logo" src="../img/logo.png" alt="Logo" />
+        <img class="texto" src="../img/tipografia.png" alt="MediStock" />
       </div>
       <div class="header-search">
         <input type="text" placeholder="Buscar medicamentos, proveedores..." />
-        <img src="img/buscar.png" alt="Buscar" />
+        <img src="../img/buscar.png" alt="Buscar" />
       </div>
       <div class="header-user">
         <div class="user-avatar">Ad</div>
@@ -49,22 +49,22 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
     <aside class="sidebar">
       <div class="sidebar-title">MENÚ PRINCIPAL</div>
       <div class="sidebar-item">
-        <img src="img/vector.png" alt="" /> <span>Inicio</span>
+        <img src="../img/home.png" alt="" /> <span>Inicio</span>
       </div>
       <div class="sidebar-item active">
-        <img src="img/vector (1).png" alt="" /> <span>Inventario</span>
+        <img src="../img/inventory.png" alt="" /> <span>Inventario</span>
       </div>
       <div class="sidebar-item">
-        <img src="img/vector (2).png" alt="" /> <span>Reportes</span>
+        <img src="../img/report.png" alt="" /> <span>Reportes</span>
       </div>
       <div class="sidebar-item">
-        <img src="img/vector (3).png" alt="" /> <span>Proveedores</span>
+        <img src="../img/cargamento.png" alt="" /> <span>Proveedores</span>
       </div>
       <div class="sidebar-item">
-        <img src="img/vector (4).png" alt="" /> <span>Empleados</span>
+        <img src="../img/empleados.png" alt="" /> <span>Empleados</span>
       </div>
       <div class="sidebar-item logout-btn">
-        <img src="img/salir.png" alt="" /> <span>Salir</span>
+        <img src="../img/salir.png" alt="" /> <span>Salir</span>
       </div>
     </aside>
 
@@ -118,7 +118,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
             <button class="filter-btn">Filtrar <img src="img/filtrar.png" alt="" style="vertical-align: middle; width: 14px;"></button>
           </div>
           <button class="add-btn" id="openModalBtn">
-            <img src="img/plus.png" alt="" /> Nuevo Producto
+            <img src="../img/plus.png" alt="" /> Nuevo Producto
           </button>
         </div>
 
@@ -188,9 +188,9 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
 
                         echo "<td class='action-icons'>";
                         // Botón Editar: Llama a una función pasándole todos los datos
-                        echo "<img src='img/edit.png' alt='Editar' title='Editar' style='cursor:pointer;' onclick='abrirModalEditar($datos_json)' />";
+                        echo "<img src='../img/edit.png' alt='Editar' title='Editar' style='cursor:pointer;' onclick='abrirModalEditar($datos_json)' />";
                         // Botón Eliminar: Llama a una función pasándole solo el ID
-                        echo "<img src='img/borrar.png' alt='Eliminar' title='Eliminar' style='cursor:pointer;' onclick='eliminarProducto(" . $row['id'] . ")' />";
+                        echo "<img src='../img/borrar.png' alt='Eliminar' title='Eliminar' style='cursor:pointer;' onclick='eliminarProducto(" . $row['id'] . ")' />";
                         echo "</td>";
                     }
                 } else {
@@ -212,7 +212,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       
       <div class="modal-header-centered">
         <h2>NUEVO PRODUCTO</h2>
-        <img src="img/logo.png" alt="Logo" class="modal-logo" /> 
+        <img src="../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
 
       <form class="add-product-form-new" action="php/procesar_nuevo_producto.php" method="POST">
@@ -259,7 +259,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       
       <div class="modal-header-centered">
         <h2>EDITAR PRODUCTO</h2>
-        <img src="img/logo.png" alt="Logo" class="modal-logo" /> 
+        <img src="../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
 
       <form class="add-product-form-new" action="php/actualizar_producto.php" method="POST">
@@ -332,27 +332,89 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       editModal.classList.add('active');
     }
 
-    // --- LÓGICA DE BÚSQUEDA RÁPIDA ---
+    // --- LÓGICA DE BÚSQUEDA RÁPIDA Y FILTROS AVANZADOS INTEGRADOS ---
     document.addEventListener("DOMContentLoaded", function() {
       const searchInput = document.querySelector('.search-input');
       const tableRows = document.querySelectorAll('.inventory-table tbody tr');
 
-      searchInput.addEventListener('keyup', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
+      // 1. Variables de ESTADO: Guardan lo que el usuario quiere buscar/filtrar en todo momento
+      let textoActual = '';
+      let filtroActual = 'todos';
+
+      // 2. Función MAESTRA que evalúa ambas condiciones al mismo tiempo
+      function aplicarFiltros() {
         tableRows.forEach(row => {
           const rowText = row.textContent.toLowerCase();
-          if (rowText.includes(searchTerm)) {
+          
+          // Condición 1: ¿La fila contiene el texto escrito en el buscador?
+          const cumpleTexto = textoActual === '' || rowText.includes(textoActual);
+          
+          // Condición 2: ¿La fila contiene la categoría o estado seleccionado en SweetAlert?
+          const cumpleFiltro = filtroActual === 'todos' || rowText.includes(filtroActual.toLowerCase());
+
+          // LA MAGIA: Solo mostramos la fila si cumple AMBAS condiciones
+          if (cumpleTexto && cumpleFiltro) {
             row.style.display = ''; 
           } else {
             row.style.display = 'none'; 
           }
         });
+      }
+
+      // 3. Evento al teclear (solo actualiza la variable de texto y llama a la función maestra)
+      searchInput.addEventListener('keyup', function(e) {
+        textoActual = e.target.value.toLowerCase();
+        aplicarFiltros();
       });
       
+      // 4. Evento del botón de SweetAlert (solo actualiza la variable del filtro y llama a la maestra)
       const filterBtn = document.querySelector('.filter-btn');
       if(filterBtn) {
-        filterBtn.addEventListener('click', function(e) {
+        filterBtn.addEventListener('click', async function(e) {
             e.preventDefault(); 
+            
+            const { value: filtroSeleccionado } = await Swal.fire({
+              title: 'Filtros Avanzados',
+              input: 'select',
+              inputOptions: {
+                'Por Estado': {
+                  'Óptimo': 'Ver solo estado: Óptimo',
+                  'Crítico': 'Ver solo estado: Crítico',
+                  'Vencido': 'Ver solo estado: Vencido'
+                },
+                'Por Categoría': {
+                  'Antibióticos': 'Ver categoría: Antibióticos',
+                  'Analgésicos': 'Ver categoría: Analgésicos',
+                  'Alergias': 'Ver categoría: Alergias',
+                  'Gastrointestinal': 'Ver categoría: Gastrointestinal'
+                },
+                'Mostrar todo': {
+                  'todos': '🔄 Mostrar todos los productos'
+                }
+              },
+              inputPlaceholder: 'Selecciona una opción...',
+              showCancelButton: true,
+              confirmButtonColor: '#3b9b4a',
+              cancelButtonColor: '#64748b',
+              confirmButtonText: 'Aplicar',
+              cancelButtonText: 'Cancelar'
+            });
+
+            if (filtroSeleccionado) {
+              filtroActual = filtroSeleccionado; // Guardamos el filtro
+              aplicarFiltros(); // Aplicamos la magia
+
+              // Pequeña notificación visual
+              let mensaje = filtroActual === 'todos' ? 'Mostrando todo el inventario' : 'Filtro aplicado exitosamente';
+              Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: mensaje,
+                showConfirmButton: false,
+                timer: 1500
+              });
+            }
         });
       }
     });
