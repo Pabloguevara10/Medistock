@@ -1,0 +1,198 @@
+/* 1. OCULTAR EL SCROLLBAR VISUALMENTE PERO PERMITIR SCROLL */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Roboto-SemiBold", Helvetica, sans-serif;
+  overflow-x: hidden; /* Evita el scroll horizontal por completo */
+  background-color: #87d9f5; /* Fondo de respaldo */
+  
+  /* Ocultar barra en Firefox, IE y Edge */
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+/* Ocultar barra en Chrome, Safari y navegadores basados en WebKit */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* 2. CONTENEDOR PRINCIPAL AJUSTADO */
+.login-bg {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(135, 217, 245, 1) 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  box-sizing: border-box; /* Evita que el padding sume a la altura total */
+}
+
+/* 3. TARJETA MÁS COMPACTA PARA QUE QUEPA EN PANTALLA */
+.login-card {
+  background-color: #5ab0f4;
+  border-radius: 60px; /* Bordes un poco más suaves */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 650px; 
+  padding: 80px 35px 50px 35px; /* Reducido para que no sea tan alta */
+  position: relative;
+  text-align: center;
+  margin-top: 60px; /* Espacio justo para el logo */
+}
+
+/* 4. LOGO PROPORCIONAL Y MENOS INVASIVO */
+.logo-container {
+  position: absolute;
+  top: -70px; /* Mitad de la altura del logo */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px; /* Reducido de 200px para ahorrar espacio vertical */
+  height: 140px;
+  background-color: #87d9f5;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container img {
+  width: 70%;
+  height: auto;
+}
+
+/* Títulos */
+.login-title {
+  color: #ffffff;
+  font-size: 24px; /* Un poco más elegante */
+  font-weight: 600;
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+}
+
+/* Grupos de inputs */
+.input-group {
+  background-color: #ffffff;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  padding: 4px 15px 4px 4px;
+  margin-bottom: 20px;
+  height: 55px; /* Altura optimizada */
+  box-sizing: border-box;
+}
+
+/* Para el registro, inputs más pequeños */
+.input-group.small {
+  height: 50px; /* Más delgados para que el formulario de registro no ocupe toda la pantalla */
+  margin-bottom: 15px;
+}
+
+/* Círculo del ícono dentro del input */
+.icon-circle {
+  width: 45px;
+  height: 45px;
+  background-color: #87d9f5;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.icon-circle img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Campos de entrada */
+.input-field {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  padding-left: 15px;
+  font-size: 16px;
+  color: #000000;
+  font-family: inherit;
+}
+
+.input-field::placeholder {
+  color: #0000007a;
+}
+
+/* Agrupación específica para Cédula (Select + Input) */
+.cedula-group {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+.cedula-select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  padding-left: 15px;
+  color: #0000007a;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Botón de envío que sobresale abajo */
+.submit-btn-container {
+  position: absolute;
+  bottom: -25px; /* Sobresale hacia abajo */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.submit-btn {
+  background-color: #87d9f5;
+  border: none;
+  border-radius: 50px;
+  width: 200px; /* Ligeramente más compacto */
+  height: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #000000;
+  cursor: pointer;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.submit-btn:hover {
+  transform: scale(1.05);
+  background-color: #72cff0;
+}
+
+.links {
+  margin-top: 20px;
+}
+.links a {
+  color: white;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+/* Diseño a dos columnas para el formulario de registro */
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+.form-col {
+  flex: 1;
+}
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+  .login-card {
+    border-radius: 40px;
+    padding: 70px 20px 40px 20px;
+    margin-top: 50px;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
