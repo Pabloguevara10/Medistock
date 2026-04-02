@@ -253,53 +253,6 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
     </div>
   </div>
 
-  <script>
-    const modal = document.getElementById('addProductModal');
-    const openBtn = document.getElementById('openModalBtn');
-    const closeBtn = document.getElementById('closeModalBtn');
-
-    openBtn.addEventListener('click', () => modal.classList.add('active'));
-    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('active');
-    });
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // 1. Seleccionamos el campo de búsqueda de la tabla y las filas de la tabla
-      const searchInput = document.querySelector('.search-input');
-      const tableRows = document.querySelectorAll('.inventory-table tbody tr');
-
-      // 2. Escuchamos cada vez que el usuario teclea algo en el campo
-      searchInput.addEventListener('keyup', function(e) {
-        // Convertimos lo que el usuario escribió a minúsculas para que la búsqueda no sea sensible a mayúsculas
-        const searchTerm = e.target.value.toLowerCase();
-
-        // 3. Recorremos cada fila de la tabla
-        tableRows.forEach(row => {
-          // Extraemos todo el texto de la fila (Código, Nombre, Categoría, etc.) y lo pasamos a minúsculas
-          const rowText = row.textContent.toLowerCase();
-
-          // 4. Si el texto de la fila incluye lo que el usuario escribió, la mostramos. Si no, la ocultamos.
-          if (rowText.includes(searchTerm)) {
-            row.style.display = ''; // Muestra la fila (comportamiento por defecto)
-          } else {
-            row.style.display = 'none'; // Oculta la fila
-          }
-        });
-      });
-      
-      // Opcional: Hacer que el botón "Filtrar" también ejecute la búsqueda por si el usuario le da clic
-      const filterBtn = document.querySelector('.filter-btn');
-      if(filterBtn) {
-        filterBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Evita que el botón recargue la página si está dentro de un form
-            // La búsqueda ya ocurre al teclear, pero este evento da retroalimentación visual si hacen clic
-        });
-      }
-    });
-  </script>
-
   <div class="modal-overlay" id="editProductModal">
     <div class="modal-content new-style-modal">
       <span class="close-btn" id="closeEditModalBtn">&times;</span>
@@ -345,9 +298,66 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
     </div>
   </div>
   
-  <script src="../../fonds/sweetalert.cjs"></script>
+  <script src="../fonds/sweetalert.cjs"></script>
+
   <script>
-    // --- LÓGICA PARA LEER LA URL Y MOSTRAR ÉXITOS ---
+    // --- LÓGICA DE MODALES DE HTML ---
+    const modal = document.getElementById('addProductModal');
+    const openBtn = document.getElementById('openModalBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+
+    openBtn.addEventListener('click', () => modal.classList.add('active'));
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+
+    const editModal = document.getElementById('editProductModal');
+    const closeEditBtn = document.getElementById('closeEditModalBtn');
+    closeEditBtn.addEventListener('click', () => editModal.classList.remove('active'));
+
+    function abrirModalEditar(producto) {
+      document.getElementById('edit_id').value = producto.id;
+      document.getElementById('edit_nombre').value = producto.nombre;
+      document.getElementById('edit_codigo').value = producto.codigo;
+      document.getElementById('edit_categoria').value = producto.categoria;
+      document.getElementById('edit_stock').value = producto.stock;
+      document.getElementById('edit_presentacion').value = producto.presentacion;
+      document.getElementById('edit_laboratorio').value = producto.laboratorio;
+      document.getElementById('edit_fecha_vencimiento').value = producto.fecha_vencimiento;
+      document.getElementById('edit_fecha_llegada').value = producto.fecha_llegada;
+      document.getElementById('edit_precio_compra').value = producto.precio_compra;
+      document.getElementById('edit_precio_venta').value = producto.precio_venta;
+      
+      editModal.classList.add('active');
+    }
+
+    // --- LÓGICA DE BÚSQUEDA RÁPIDA ---
+    document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.querySelector('.search-input');
+      const tableRows = document.querySelectorAll('.inventory-table tbody tr');
+
+      searchInput.addEventListener('keyup', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        tableRows.forEach(row => {
+          const rowText = row.textContent.toLowerCase();
+          if (rowText.includes(searchTerm)) {
+            row.style.display = ''; 
+          } else {
+            row.style.display = 'none'; 
+          }
+        });
+      });
+      
+      const filterBtn = document.querySelector('.filter-btn');
+      if(filterBtn) {
+        filterBtn.addEventListener('click', function(e) {
+            e.preventDefault(); 
+        });
+      }
+    });
+
+    // --- LÓGICA PARA LEER LA URL Y MOSTRAR ÉXITOS CON SWEETALERT ---
     document.addEventListener("DOMContentLoaded", function() {
       const urlParams = new URLSearchParams(window.location.search);
       const status = urlParams.get('status');
@@ -372,60 +382,34 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
           icono = 'error';
         }
 
-        // Ejecutar la plantilla de éxito de SweetAlert
         Swal.fire({
           title: titulo,
           text: texto,
           icon: icono,
-          confirmButtonColor: '#3b9b4a', // Verde de tu paleta
+          confirmButtonColor: '#3b9b4a', 
           draggable: true
         });
 
-        // Limpiar la URL para que no vuelva a salir la alerta si recargan la página
         window.history.replaceState(null, null, window.location.pathname);
       }
     });
 
     // --- LÓGICA PARA ELIMINAR (CONFIRMACIÓN SWEETALERT) ---
     function eliminarProducto(id) {
-      // Plantilla de confirmación que me pasaste, adaptada al español y a tus colores
       Swal.fire({
         title: '¿Estás seguro?',
-        text: "¡No podrás revertir esto!",
+        text: "¡No podrás revertir esto y el producto se borrará del inventario!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33', // Rojo para eliminar
-        cancelButtonColor: '#64748b', // Gris oscuro de tu paleta
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#64748b', 
         confirmButtonText: 'Sí, ¡eliminar!',
         cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
-          // Si dicen que sí, disparamos la eliminación en PHP
           window.location.href = "php/eliminar_producto.php?id=" + id;
         }
       });
-    }
-
-    // --- LÓGICA PARA EDITAR (Se mantiene igual) ---
-    const editModal = document.getElementById('editProductModal');
-    const closeEditBtn = document.getElementById('closeEditModalBtn');
-
-    closeEditBtn.addEventListener('click', () => editModal.classList.remove('active'));
-
-    function abrirModalEditar(producto) {
-      document.getElementById('edit_id').value = producto.id;
-      document.getElementById('edit_nombre').value = producto.nombre;
-      document.getElementById('edit_codigo').value = producto.codigo;
-      document.getElementById('edit_categoria').value = producto.categoria;
-      document.getElementById('edit_stock').value = producto.stock;
-      document.getElementById('edit_presentacion').value = producto.presentacion;
-      document.getElementById('edit_laboratorio').value = producto.laboratorio;
-      document.getElementById('edit_fecha_vencimiento').value = producto.fecha_vencimiento;
-      document.getElementById('edit_fecha_llegada').value = producto.fecha_llegada;
-      document.getElementById('edit_precio_compra').value = producto.precio_compra;
-      document.getElementById('edit_precio_venta').value = producto.precio_venta;
-      
-      editModal.classList.add('active');
     }
   </script>
 </body>
