@@ -325,3 +325,43 @@ h1.page-title { color: #2b6b71; font-size: 24px; margin-bottom: 20px; font-weigh
   .new-style-modal { padding: 25px 20px; }
   .row-3-cols, .row-2-cols { grid-template-columns: 1fr; }
 }
+
+/* ========================================================
+   MEJORAS PARA TABLAS CON MUCHOS DATOS (SCROLL Y STICKY)
+   ======================================================== */
+
+.table-responsive {
+  /* Limita el alto máximo de la tabla al 60% del alto de la pantalla */
+  max-height: 60vh; 
+  /* Si los datos superan ese alto, crea una barra de desplazamiento vertical */
+  overflow-y: auto; 
+  /* Mantiene los bordes redondeados */
+  border-radius: 8px; 
+}
+
+.inventory-table thead th {
+  /* Hace que el encabezado se quede "pegado" al hacer scroll hacia abajo */
+  position: sticky;
+  top: 0;
+  /* IMPORTANTE: Un color sólido para que las filas no se vean transparentes por detrás */
+  background-color: #f8fafc; 
+  z-index: 10; /* Lo mantiene por encima de las demás filas */
+  /* Sombra sutil para separar el encabezado del contenido que va subiendo */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+}
+
+/* Modificamos ligeramente la barra de desplazamiento (Scrollbar) para que se vea elegante */
+.table-responsive::-webkit-scrollbar {
+  width: 8px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9; 
+  border-radius: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1; 
+  border-radius: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; 
+}
