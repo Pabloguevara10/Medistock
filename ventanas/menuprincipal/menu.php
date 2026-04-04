@@ -41,7 +41,7 @@ if($resultado_categorias) {
   <link rel="stylesheet" href="../../css/globals.css" /> 
   <link rel="stylesheet" href="../../css/style.css" />
   
-  <script src="../../fonds/chart.cjs"></script>
+  <script src="../../fonds/charts.cjs"></script>
 
   <style>
     .dashboard-grid {
@@ -149,7 +149,7 @@ if($resultado_categorias) {
       <div class="sidebar-item">
         <img src="../../img/empleados.png" alt="" /> <span>Empleados</span>
       </div>
-      <a href="../login/login.php" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
+      <a href="../login/login.html" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
         <img src="../../img/salir.png" alt="" /> <span>Salir</span>
       </a>
     </aside>
@@ -188,7 +188,7 @@ if($resultado_categorias) {
           </div>
 
           <div class="quick-actions">
-            <a href="../inventario.php" class="action-card">
+            <a href="../inventario/inventario.php" class="action-card">
               <img src="../../img/pastilla.png" alt=""><br>Gestionar Inventario
             </a>
             <a href="../proovedores/proovedores.php" class="action-card">
@@ -200,11 +200,11 @@ if($resultado_categorias) {
           </div>
 
           <div class="dashboard-box">
-            <div class="box-header">📊 Distribución de Inventario por Categoría</div>
+            <div class="box-header">📊 Distribución de .. por Categoría</div>
             <div class="chart-container">
               <?php if (empty($categorias_nombres)): ?>
                   <div style="display:flex; height:100%; align-items:center; justify-content:center; color:#64748b;">
-                      Aún no hay productos registrados en el inventario.
+                      Aún no hay productos registrados en el ...
                   </div>
               <?php else: ?>
                   <canvas id="categoriasChart"></canvas>
@@ -231,7 +231,7 @@ if($resultado_categorias) {
                   }
               }
               if ($total_criticos > 4) {
-                  echo "<div style='text-align:center; margin-top:15px;'><a href='../inventario.php' style='color:#3b7d85; font-size:13px; font-weight:bold;'>Ver todas las alertas &rarr;</a></div>";
+                  echo "<div style='text-align:center; margin-top:15px;'><a href='../../...php' style='color:#3b7d85; font-size:13px; font-weight:bold;'>Ver todas las alertas &rarr;</a></div>";
               }
           } else {
               echo "<div style='text-align:center; padding: 30px 10px; color:#64748b; font-size: 14px;'>";
