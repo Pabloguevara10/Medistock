@@ -23,8 +23,8 @@ if($resultado_productos) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta charset="utf-8" />
   <title>MediStock - Proveedores</title>
-  <link rel="stylesheet" href="../css/globals.css" /> 
-  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../../css/globals.css" /> 
+  <link rel="stylesheet" href="../../css/style.css" />
   
   <style>
     .providers-grid {
@@ -107,12 +107,12 @@ if($resultado_productos) {
   <div class="app-container">
     <header class="header">
       <div class="header-left">
-        <img class="logo" src="../img/logo.png" alt="Logo" />
-        <img class="texto" src="../img/tipografia.png" alt="MediStock" />
+        <img class="logo" src="../../img/logo.png" alt="Logo" />
+        <img class="texto" src="../../img/tipografia.png" alt="MediStock" />
       </div>
       <div class="header-search">
         <input type="text" id="buscador-proveedor" placeholder="Buscar proveedores..." />
-        <img src="../img/buscar.png" alt="Buscar" />
+        <img src="../../img/buscar.png" alt="Buscar" />
       </div>
       <div class="header-user">
         <div class="user-avatar">Ad</div>
@@ -122,24 +122,24 @@ if($resultado_productos) {
 
     <aside class="sidebar">
       <div class="sidebar-title">MENÚ PRINCIPAL</div>
-      <div class="sidebar-item">
-        <img src="../img/home.png" alt="" /> <span>Inicio</span>
-      </div>
+      <a href="../menuprincipal/menu.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
+        <img src="../../img/home.png" alt="" /> <span>Inicio</span>
+      </a>
       <a href="../inventario/inventario.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
-        <img src="../img/inventory.png" alt="" /> <span>Inventario</span>
+        <img src="../../img/inventory.png" alt="" /> <span>Inventario</span>
       </a>
       <div class="sidebar-item">
-        <img src="../img/report.png" alt="" /> <span>Reportes</span>
+        <img src="../../img/report.png" alt="" /> <span>Reportes</span>
       </div>
       <div class="sidebar-item active">
-        <img src="../img/cargamento.png" alt="" /> <span>Proveedores</span>
+        <img src="../../img/cargamento.png" alt="" /> <span>Proveedores</span>
       </div>
       <div class="sidebar-item">
-        <img src="../img/empleados.png" alt="" /> <span>Empleados</span>
+        <img src="../../img/empleados.png" alt="" /> <span>Empleados</span>
       </div>
-      <div class="sidebar-item logout-btn">
-        <img src="../img/salir.png" alt="" /> <span>Salir</span>
-      </div>
+      <a href="../login/login.php" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
+        <img src="../../img/salir.png" alt="" /> <span>Salir</span>
+      </a>
     </aside>
 
     <main class="main-content">
@@ -160,7 +160,7 @@ if($resultado_productos) {
             <h2 style="font-size: 16px; margin:0; color: #334155;">Directorio Activo</h2>
           </div>
           <button class="add-btn" id="openProviderModalBtn">
-            <img src="../img/plus.png" alt="" /> Nuevo Proveedor
+            <img src="../../img/plus.png" alt="" /> Nuevo Proveedor
           </button>
         </div>
 
@@ -177,21 +177,21 @@ if($resultado_productos) {
                       <span class="provider-rif"><strong>RIF:</strong> <?php echo htmlspecialchars($row['rif']); ?></span>
                     </div>
                     <div class="icon-actions">
-                      <img src="../img/edit.png" alt="Editar" title="Editar" style="cursor:pointer;" onclick='abrirModalEditarProveedor(<?php echo $datos_json; ?>)'>
-                      <img src="../img/borrar.png" alt="Eliminar" title="Eliminar" style="cursor:pointer;" onclick="eliminarProveedor(<?php echo $row['id']; ?>)">
+                      <img src="../../img/edit.png" alt="Editar" title="Editar" style="cursor:pointer;" onclick='abrirModalEditarProveedor(<?php echo $datos_json; ?>)'>
+                      <img src="../../img/borrar.png" alt="Eliminar" title="Eliminar" style="cursor:pointer;" onclick="eliminarProveedor(<?php echo $row['id']; ?>)">
                     </div>
                   </div>
                   <div>
                     <span class="provider-categories"><?php echo htmlspecialchars($row['categorias']); ?></span>
                   </div>
                   <div class="provider-info">
-                     <img src="../img/tlf.png" alt="Teléfono" style="width:16px;"> <?php echo htmlspecialchars($row['telefono']); ?>
+                     <img src="../../img/tlf.png" alt="Teléfono" style="width:16px;"> <?php echo htmlspecialchars($row['telefono']); ?>
                   </div>
                   <div class="provider-info">
-                     <img src="../img/email.png" alt="Email" style="width:16px;"> <?php echo htmlspecialchars($row['correo']); ?>
+                     <img src="../../img/email.png" alt="Email" style="width:16px;"> <?php echo htmlspecialchars($row['correo']); ?>
                   </div>
                   <div class="provider-info">
-                     <img src="../img/ubi.png" alt="Ubicación" style="width:16px;"> <?php echo htmlspecialchars($row['direccion']); ?>
+                     <img src="../../img/ubi.png" alt="Ubicación" style="width:16px;"> <?php echo htmlspecialchars($row['direccion']); ?>
                   </div>
                   <div class="provider-actions">
                     <button type="button" class="btn-pedido" onclick='abrirModalPedido(<?php echo $datos_json; ?>)'>Generar Pedido</button>
@@ -213,7 +213,7 @@ if($resultado_productos) {
       <span class="close-btn" id="closeProviderModalBtn">&times;</span>
       <div class="modal-header-centered">
         <h2>NUEVO PROVEEDOR</h2>
-        <img src="../img/logo.png" alt="Logo" class="modal-logo" /> 
+        <img src="../../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
       <form class="add-product-form-new" action="php/procesar_nuevo_proveedor.php" method="POST">
         <input type="text" name="nombre" class="input-pill full-width" placeholder="Nombre" required />
@@ -242,7 +242,7 @@ if($resultado_productos) {
       <span class="close-btn" id="closeEditProviderModalBtn">&times;</span>
       <div class="modal-header-centered">
         <h2>EDITAR PROVEEDOR</h2>
-        <img src="../img/logo.png" alt="Logo" class="modal-logo" /> 
+        <img src="../../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
       <form class="add-product-form-new" action="php/actualizar_proveedor.php" method="POST">
         <input type="hidden" name="id" id="edit_id" />

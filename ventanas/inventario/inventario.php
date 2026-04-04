@@ -26,19 +26,19 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta charset="utf-8" />
   <title>MediStock - Inventario Admin</title>
-  <link rel="stylesheet" href="../css/globals.css" /> <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../../css/globals.css" /> <link rel="stylesheet" href="../../css/style.css" />
 </head>
 <body>
   <div class="app-container">
     
     <header class="header">
       <div class="header-left">
-        <img class="logo" src="../img/logo.png" alt="Logo" />
-        <img class="texto" src="../img/tipografia.png" alt="MediStock" />
+        <img class="logo" src="../../img/logo.png" alt="Logo" />
+        <img class="texto" src="../../img/tipografia.png" alt="MediStock" />
       </div>
       <div class="header-search">
         <input type="text" placeholder="Buscar medicamentos, proveedores..." />
-        <img src="../img/buscar.png" alt="Buscar" />
+        <img src="../../img/buscar.png" alt="Buscar" />
       </div>
       <div class="header-user">
         <div class="user-avatar">Ad</div>
@@ -48,24 +48,24 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
 
     <aside class="sidebar">
       <div class="sidebar-title">MENÚ PRINCIPAL</div>
-      <div class="sidebar-item">
-        <img src="../img/home.png" alt="" /> <span>Inicio</span>
-      </div>
+      <a href="../menuprincipal/menu.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
+        <img src="../../img/home.png" alt="" /> <span>Inicio</span>
+      </a>
       <div class="sidebar-item active">
-        <img src="../img/inventory.png" alt="" /> <span>Inventario</span>
+        <img src="../../img/inventory.png" alt="" /> <span>Inventario</span>
       </div>
       <div class="sidebar-item">
-        <img src="../img/report.png" alt="" /> <span>Reportes</span>
+        <img src="../../img/report.png" alt="" /> <span>Reportes</span>
       </div>
+      <a href="../proovedores/proovedores.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
+        <img src="../../img/cargamento.png" alt="" /> <span>Proveedores</span>
+      </a>
       <div class="sidebar-item">
-        <img src="../img/cargamento.png" alt="" /> <span>Proveedores</span>
+        <img src="../../img/empleados.png" alt="" /> <span>Empleados</span>
       </div>
-      <div class="sidebar-item">
-        <img src="../img/empleados.png" alt="" /> <span>Empleados</span>
-      </div>
-      <div class="sidebar-item logout-btn">
-        <img src="../img/salir.png" alt="" /> <span>Salir</span>
-      </div>
+      <a href="../login/login.php" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
+        <img src="../../img/salir.png" alt="" /> <span>Salir</span>
+      </a>
     </aside>
 
     <main class="main-content">
@@ -115,10 +115,10 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
         <div class="table-toolbar">
           <div class="toolbar-left">
             <input type="text" class="search-input" placeholder="Buscar por código o nombre..." />
-            <button class="filter-btn">Filtrar <img src="img/filtrar.png" alt="" style="vertical-align: middle; width: 14px;"></button>
+            <button class="filter-btn">Filtrar <img src="../img/filtrar.png" alt="" style="vertical-align: middle; width: 14px;"></button>
           </div>
           <button class="add-btn" id="openModalBtn">
-            <img src="../img/plus.png" alt="" /> Nuevo Producto
+            <img src="../../img/plus.png" alt="" /> Nuevo Producto
           </button>
         </div>
 
@@ -188,9 +188,9 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
 
                         echo "<td class='action-icons'>";
                         // Botón Editar: Llama a una función pasándole todos los datos
-                        echo "<img src='../img/edit.png' alt='Editar' title='Editar' style='cursor:pointer;' onclick='abrirModalEditar($datos_json)' />";
+                        echo "<img src='../../img/edit.png' alt='Editar' title='Editar' style='cursor:pointer;' onclick='abrirModalEditar($datos_json)' />";
                         // Botón Eliminar: Llama a una función pasándole solo el ID
-                        echo "<img src='../img/borrar.png' alt='Eliminar' title='Eliminar' style='cursor:pointer;' onclick='eliminarProducto(" . $row['id'] . ")' />";
+                        echo "<img src='../../img/borrar.png' alt='Eliminar' title='Eliminar' style='cursor:pointer;' onclick='eliminarProducto(" . $row['id'] . ")' />";
                         echo "</td>";
                     }
                 } else {
@@ -212,7 +212,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       
       <div class="modal-header-centered">
         <h2>NUEVO PRODUCTO</h2>
-        <img src="../img/logo.png" alt="Logo" class="modal-logo" /> 
+        <img src="../../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
 
       <form class="add-product-form-new" action="php/procesar_nuevo_producto.php" method="POST">
@@ -259,7 +259,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       
       <div class="modal-header-centered">
         <h2>EDITAR PRODUCTO</h2>
-        <img src="../img/logo.png" alt="Logo" class="modal-logo" /> 
+        <img src="../../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
 
       <form class="add-product-form-new" action="php/actualizar_producto.php" method="POST">

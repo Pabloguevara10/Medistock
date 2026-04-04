@@ -43,7 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("ssssssss", $tipo_doc, $cedula, $nombre, $apellido, $email, $telefono, $hashed_password, $rol);
 
     if ($stmt->execute()) {
-        echo "<script>alert('¡Personal registrado exitosamente!'); window.location.href='login.html';</script>";
+        // REDIRECCIÓN CORREGIDA: Salimos de php/ y volvemos al login.php
+        echo "<script>alert('¡Personal registrado exitosamente!'); window.location.href='../login.php';</script>";
     } else {
         echo "<script>alert('Error al registrar: " . $stmt->error . "'); window.history.back();</script>";
     }
@@ -51,7 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $conn->close();
 } else {
-    header("Location: registro.html");
+    // REDIRECCIÓN CORREGIDA
+    header("Location: ../registro.html");
     exit();
 }
 ?>

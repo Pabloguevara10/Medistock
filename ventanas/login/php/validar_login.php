@@ -25,20 +25,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['nombre_completo'] = $user['nombre'] . " " . $user['apellido'];
             $_SESSION['rol'] = $user['rol'];
 
-            // Redirección dependiendo del rol (Opcional, o todos a menu.html)
-            header("Location: menu.html"); 
+            // REDIRECCIÓN CORREGIDA: Salimos de php/, salimos de login/ y entramos a menu.php en la raíz
+            header("Location: ../../menuprincipal/menu.php"); 
             exit();
         } else {
-            echo "<script>alert('Contraseña incorrecta.'); window.location.href='login.html';</script>";
+            // REDIRECCIÓN CORREGIDA: Salimos de php/ y entramos a login.php
+            echo "<script>alert('Contraseña incorrecta.'); window.location.href='../login.php';</script>";
         }
     } else {
-        echo "<script>alert('No se encontró ninguna cuenta con ese correo.'); window.location.href='login.html';</script>";
+        // REDIRECCIÓN CORREGIDA
+        echo "<script>alert('No se encontró ninguna cuenta con ese correo.'); window.location.href='../login.php';</script>";
     }
 
     $stmt->close();
     $conn->close();
 } else {
-    header("Location: login.html");
+    // REDIRECCIÓN CORREGIDA
+    header("Location: ../login.php");
     exit();
 }
 ?>

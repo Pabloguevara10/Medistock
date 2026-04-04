@@ -65,7 +65,7 @@
         </div>
 
         <div class="links">
-          <a href="login.html">¿Ya tienes cuenta? Inicia Sesión</a>
+          <a href="login.php">¿Ya tienes cuenta? Inicia Sesión</a>
         </div>
 
         <div class="submit-btn-container">
