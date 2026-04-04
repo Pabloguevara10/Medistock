@@ -26,7 +26,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta charset="utf-8" />
   <title>MediStock - Inventario Admin</title>
-  <link rel="stylesheet" href="css/globals.css" /> <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="../css/globals.css" /> <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
   <div class="app-container">
