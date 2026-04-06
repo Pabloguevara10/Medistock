@@ -340,14 +340,16 @@ h1.page-title { color: #2b6b71; font-size: 24px; margin-bottom: 20px; font-weigh
 }
 
 .inventory-table thead th {
-  /* Hace que el encabezado se quede "pegado" al hacer scroll hacia abajo */
   position: sticky;
   top: 0;
-  /* IMPORTANTE: Un color sólido para que las filas no se vean transparentes por detrás */
-  background-color: #f8fafc; 
-  z-index: 10; /* Lo mantiene por encima de las demás filas */
-  /* Sombra sutil para separar el encabezado del contenido que va subiendo */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+  /* El azul característico de tu sistema */
+  background-color: #3b7d85; 
+  /* Texto en blanco para que resalte perfecto */
+  color: #ffffff; 
+  z-index: 10; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  /* Opcional: Un poco de espacio extra para que se vea más limpio */
+  padding: 12px 15px; 
 }
 
 /* Modificamos ligeramente la barra de desplazamiento (Scrollbar) para que se vea elegante */

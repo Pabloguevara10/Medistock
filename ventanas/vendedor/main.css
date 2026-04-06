@@ -1,0 +1,249 @@
+/* main.css */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    background: linear-gradient(135deg, rgba(255,255,255,1), rgba(135,217,245,0.4));
+    height: 100vh;
+    color: #333;
+}
+
+/* Layout Principal */
+.app-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px; /* Área principal y Panel de Venta */
+    grid-template-rows: 80px 1fr;
+    height: 100vh;
+}
+
+/* Cabecera de Búsqueda */
+.top-bar {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.search-box input {
+    width: 400px;
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Área Central (Productos) */
+.main-content {
+    padding: 40px;
+    overflow-y: auto;
+}
+
+.main-content h2 {
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.productos-grid {
+    display: flex;
+    gap: 20px;
+}
+
+.producto-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 200px;
+    text-align: center;
+}
+
+.producto-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.producto-card .precio {
+    font-weight: bold;
+    color: rgba(135,217,245,1); /* Tu azul */
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.btn-agregar {
+    background: rgba(135,217,245,1);
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+/* PANEL DE PUNTO DE VENTA (DERECHA) */
+.pos-panel {
+    background: #fff;
+    border-left: 1px solid #eaeaea;
+    box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.panel-header h2 {
+    font-size: 20px;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #222;
+}
+
+.pos-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    flex-grow: 1;
+}
+
+/* Secciones del formulario */
+.seccion-datos, .seccion-resumen {
+    background: #fdfdfd;
+    border: 1px solid #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.seccion-datos h3, .resumen-header h3 {
+    font-size: 15px;
+    color: #555;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 5px;
+}
+
+.grupo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.grupo-input label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+.grupo-input input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.grupo-input input:focus {
+    border-color: rgba(135,217,245,1);
+}
+
+/* Resumen Carrito */
+.resumen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.link-vaciar {
+    font-size: 12px;
+    color: #ff6b6b;
+    text-decoration: none;
+}
+
+.lista-carrito {
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item-carrito {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.carrito-vacio {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+.totales {
+    border-top: 2px dashed #eee;
+    padding-top: 15px;
+    margin-top: auto;
+}
+
+.fila-total {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.total-final {
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    margin-top: 10px;
+}
+
+/* Botón Final (Tu color crema) */
+.btn-cobrar {
+    background: rgba(249,230,179,1);
+    color: #000;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.3s;
+    margin-top: auto; /* Empuja el botón al fondo */
+}
+
+.btn-cobrar:active {
+    transform: scale(0.98);
+}
+
+.btn-cobrar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.alerta-exito {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+}

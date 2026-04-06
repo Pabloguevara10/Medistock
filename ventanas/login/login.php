@@ -71,6 +71,11 @@
           texto = 'Tu cuenta ha sido creada. Ya puedes iniciar sesión.';
           icono = 'success';
           colorConfirm = '#3b9b4a'; // Verde corporativo
+        } else if (status === 'error_acceso') {
+          titulo = 'Acceso Restringido';
+          texto = 'No tienes permisos de Administrador para entrar a esa área.';
+          icono = 'warning';
+          colorConfirm = '#f59e0b'; // Naranja de advertencia
         }
 
         Swal.fire({

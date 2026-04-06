@@ -1,6 +1,10 @@
 <?php
 session_start();
-// Agregamos ../ para salir de menuprincipal/ y entrar a login/
+// Validación estricta de rol
+if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'Administrador') {
+    header("Location: ../login/login.php?status=error_acceso");
+    exit();
+}
 require '../login/php/conexion.php'; 
 
 // 1. Obtener métricas rápidas para las tarjetas superiores
@@ -140,15 +144,15 @@ if($resultado_categorias) {
       <a href="../inventario/inventario.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
         <img src="../../img/inventory.png" alt="" /> <span>Inventario</span>
       </a>
-      <div class="sidebar-item">
+      <a href="../reportes/reportes.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
         <img src="../../img/report.png" alt="" /> <span>Reportes</span>
-      </div>
+      </a>
       <a href="../proovedores/proovedores.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
         <img src="../../img/cargamento.png" alt="" /> <span>Proveedores</span>
       </a>
-      <div class="sidebar-item">
+      <a href="../empleados/empleados.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
         <img src="../../img/empleados.png" alt="" /> <span>Empleados</span>
-      </div>
+      </a>
       <a href="../login/login.html" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
         <img src="../../img/salir.png" alt="" /> <span>Salir</span>
       </a>
