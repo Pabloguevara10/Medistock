@@ -1,22 +1,22 @@
 <?php
 session_start();
-// Asegúrate de que esta ruta sea la que te funcionó en el paso anterior
+// Conexión principal
 require '../login/php/conexion.php'; 
 
 // --- 1. Total de productos ---
 $res_total = $conn->query("SELECT COUNT(*) as total FROM productos");
 $total_productos = $res_total->fetch_assoc()['total'];
 
-// --- 2. Valor del Inventario (Calculado sumando: stock * precio de compra) ---
+// --- 2. Valor del Inventario ---
 $res_valor = $conn->query("SELECT SUM(stock * precio_compra) as valor FROM productos");
 $valor_inventario = $res_valor->fetch_assoc()['valor'];
-$valor_inventario = $valor_inventario ? $valor_inventario : 0; // Si no hay productos, es 0
+$valor_inventario = $valor_inventario ? $valor_inventario : 0; 
 
-// --- 3. Stock Crítico (Contamos los que tienen stock menor o igual a 10, o están vencidos) ---
+// --- 3. Stock Crítico ---
 $res_critico = $conn->query("SELECT COUNT(*) as total_critico FROM productos WHERE stock <= 10 OR estado = 'Vencido'");
 $total_critico = $res_critico->fetch_assoc()['total_critico'];
 
-// --- 4. Alertas (Traemos hasta 3 productos que estén críticos o vencidos para mostrarlos en la caja) ---
+// --- 4. Alertas ---
 $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock <= 10 OR estado = 'Vencido' ORDER BY stock ASC LIMIT 3");
 ?>
 
@@ -26,7 +26,8 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta charset="utf-8" />
   <title>MediStock - Inventario Admin</title>
-  <link rel="stylesheet" href="../../css/globals.css" /> <link rel="stylesheet" href="../../css/style.css" />
+  <link rel="stylesheet" href="../../css/globals.css" /> 
+  <link rel="stylesheet" href="../../css/style.css" />
 </head>
 <body>
   <div class="app-container">
@@ -89,12 +90,9 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
         
         <div class="alerts-panel">
           <div class="sidebar-title" style="margin:0; padding-bottom: 10px;">ALERTAS SISTEMA</div>
-          
           <?php
-          // Verificamos si hay alertas que mostrar
           if ($alertas->num_rows > 0) {
               while($alerta = $alertas->fetch_assoc()) {
-                  // Cambiamos el mensaje dependiendo de si está vencido o solo tiene poco stock
                   if ($alerta['estado'] == 'Vencido') {
                       $mensaje = "🚨 <b>¡Vencido!</b> " . htmlspecialchars($alerta['nombre']);
                   } else {
@@ -103,11 +101,9 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
                   echo "<div class='alert-box' style='padding: 8px 12px; font-size: 14px; margin-top: 8px;'>" . $mensaje . "</div>";
               }
           } else {
-              // Si no hay productos críticos, mostramos un mensaje de "Todo bien" en color verde
               echo "<div class='alert-box' style='background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px; font-size: 14px; margin-top: 10px;'>✅ Todo en orden. No hay alertas de inventario.</div>";
           }
           ?>
-          
         </div>
       </div>
 
@@ -142,22 +138,16 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
             </thead>
             <tbody>
               <?php
-                // Incluir conexión a la BD
-                require '../login/php/conexion.php';
-
-                // Consultar todos los productos
+                // Consultar todos los productos (Eliminamos el require duplicado aquí)
                 $query = "SELECT * FROM productos ORDER BY id DESC";
                 $resultado = $conn->query($query);
 
-                // Si hay productos, los mostramos en la tabla
-                if ($resultado->num_rows > 0) {
+                if ($resultado && $resultado->num_rows > 0) {
                     while($row = $resultado->fetch_assoc()) {
                         
-                        // Determinar la clase de la píldora de color según el estado
                         $clase_estado = "";
                         if($row['estado'] == 'Óptimo') $clase_estado = 'optimo';
-                        else if($row['estado'] == 'Crítico') $clase_estado = 'critico';
-                        else if($row['estado'] == 'Vencido') $clase_estado = 'critico'; // Usamos rojo también para vencido
+                        else if($row['estado'] == 'Crítico' || $row['estado'] == 'Vencido') $clase_estado = 'critico';
 
                         echo "<tr>";
                         echo "<td>" . htmlspecialchars($row['codigo']) . "</td>";
@@ -165,37 +155,30 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
                         echo "<td>" . htmlspecialchars($row['categoria']) . "</td>";
                         echo "<td>" . htmlspecialchars($row['presentacion']) . "</td>";
                         
-                        // Resaltar en negrita el stock si está en crítico
                         if ($row['estado'] == 'Crítico' || $row['estado'] == 'Vencido') {
                             echo "<td style='color:#d8333c;'><strong>" . $row['stock'] . "</strong></td>";
                         } else {
                             echo "<td><strong>" . $row['stock'] . "</strong></td>";
                         }
                         
-                        // Formatear precios a dólares (ej: $4.50)
                         echo "<td>$" . number_format($row['precio_compra'], 2) . "</td>";
                         echo "<td>$" . number_format($row['precio_venta'], 2) . "</td>";
                         echo "<td>" . htmlspecialchars($row['laboratorio']) . "</td>";
                         
-                        // Formatear fechas para que se vean como DD/MM/YYYY
                         echo "<td>" . date("d/m/Y", strtotime($row['fecha_llegada'])) . "</td>";
                         echo "<td>" . date("d/m/Y", strtotime($row['fecha_vencimiento'])) . "</td>";
                         
                         echo "<td><span class='badge " . $clase_estado . "'>" . $row['estado'] . "</span></td>";
                         
-                        // Convertimos todos los datos de esa fila en un formato que JavaScript entienda (JSON)
                         $datos_json = htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8');
 
                         echo "<td class='action-icons'>";
-                        // Botón Editar: Llama a una función pasándole todos los datos
                         echo "<img src='../../img/edit.png' alt='Editar' title='Editar' style='cursor:pointer;' onclick='abrirModalEditar($datos_json)' />";
-                        // Botón Eliminar: Llama a una función pasándole solo el ID
                         echo "<img src='../../img/borrar.png' alt='Eliminar' title='Eliminar' style='cursor:pointer;' onclick='eliminarProducto(" . $row['id'] . ")' />";
                         echo "</td>";
                     }
                 } else {
-                    // Si no hay productos en la base de datos
-                    echo "<tr><td colspan='12' style='text-align:center; padding: 20px;'>No hay productos registrados en el inventario. Haz clic en 'Nuevo Producto' para comenzar.</td></tr>";
+                    echo "<tr><td colspan='12' style='text-align:center; padding: 20px;'>No hay productos registrados en el inventario.</td></tr>";
                 }
               ?>
             </tbody>
@@ -207,18 +190,14 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
 
   <div class="modal-overlay" id="addProductModal">
     <div class="modal-content new-style-modal">
-      
       <span class="close-btn" id="closeModalBtn">&times;</span>
-      
       <div class="modal-header-centered">
         <h2>NUEVO PRODUCTO</h2>
         <img src="../../img/logo.png" alt="Logo" class="modal-logo" /> 
       </div>
 
       <form class="add-product-form-new" action="php/procesar_nuevo_producto.php" method="POST">
-        
         <input type="text" name="nombre" class="input-pill full-width" placeholder="Nombre" required />
-        
         <input type="text" name="codigo" class="input-pill full-width" placeholder="Código de Barras" required />
         
         <select name="categoria" class="input-pill full-width" required>
@@ -227,6 +206,12 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
           <option value="Analgésicos">Analgésicos</option>
           <option value="Alergias">Alergias</option>
           <option value="Gastrointestinal">Gastrointestinal</option>
+          <option value="Cardiología">Cardiología</option>
+          <option value="Respiratorio">Respiratorio</option>
+          <option value="Dermatología">Dermatología</option>
+          <option value="Vitaminas">Vitaminas</option>
+          <option value="Insumos Médicos">Insumos Médicos</option>
+          <option value="Antimicóticos">Antimicóticos</option>
         </select>
 
         <div class="row-3-cols">
@@ -236,8 +221,8 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
         </div>
 
         <div class="row-2-cols">
-          <input type="text" name="fecha_vencimiento" class="input-pill" placeholder="Fecha Vencimiento: DD/MM/AA" onfocus="(this.type='date')" onblur="(this.type='text')" required />
-          <input type="text" name="fecha_llegada" class="input-pill" placeholder="Fecha Llegada: DD/MM/AA" onfocus="(this.type='date')" onblur="(this.type='text')" required />
+          <input type="text" name="fecha_vencimiento" class="input-pill" placeholder="Fecha Vencimiento" onfocus="(this.type='date')" onblur="(this.type='text')" required />
+          <input type="text" name="fecha_llegada" class="input-pill" placeholder="Fecha Llegada" onfocus="(this.type='date')" onblur="(this.type='text')" required />
         </div>
 
         <div class="row-2-cols">
@@ -248,7 +233,6 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
         <div class="submit-container">
           <button type="submit" class="btn-submit-pill">Añadir Producto</button>
         </div>
-
       </form>
     </div>
   </div>
@@ -256,7 +240,6 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
   <div class="modal-overlay" id="editProductModal">
     <div class="modal-content new-style-modal">
       <span class="close-btn" id="closeEditModalBtn">&times;</span>
-      
       <div class="modal-header-centered">
         <h2>EDITAR PRODUCTO</h2>
         <img src="../../img/logo.png" alt="Logo" class="modal-logo" /> 
@@ -264,7 +247,6 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
 
       <form class="add-product-form-new" action="php/actualizar_producto.php" method="POST">
         <input type="hidden" name="id" id="edit_id" />
-        
         <input type="text" name="nombre" id="edit_nombre" class="input-pill full-width" required />
         <input type="text" name="codigo" id="edit_codigo" class="input-pill full-width" required />
         
@@ -273,6 +255,12 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
           <option value="Analgésicos">Analgésicos</option>
           <option value="Alergias">Alergias</option>
           <option value="Gastrointestinal">Gastrointestinal</option>
+          <option value="Cardiología">Cardiología</option>
+          <option value="Respiratorio">Respiratorio</option>
+          <option value="Dermatología">Dermatología</option>
+          <option value="Vitaminas">Vitaminas</option>
+          <option value="Insumos Médicos">Insumos Médicos</option>
+          <option value="Antimicóticos">Antimicóticos</option>
         </select>
 
         <div class="row-3-cols">
@@ -298,7 +286,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
     </div>
   </div>
   
-  <script src="../fonds/sweetalert.cjs"></script>
+  <script src="../../fonds/sweetalert.cjs"></script>
 
   <script>
     // --- LÓGICA DE MODALES DE HTML ---
@@ -337,22 +325,16 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       const searchInput = document.querySelector('.search-input');
       const tableRows = document.querySelectorAll('.inventory-table tbody tr');
 
-      // 1. Variables de ESTADO: Guardan lo que el usuario quiere buscar/filtrar en todo momento
       let textoActual = '';
       let filtroActual = 'todos';
 
-      // 2. Función MAESTRA que evalúa ambas condiciones al mismo tiempo
       function aplicarFiltros() {
         tableRows.forEach(row => {
           const rowText = row.textContent.toLowerCase();
           
-          // Condición 1: ¿La fila contiene el texto escrito en el buscador?
           const cumpleTexto = textoActual === '' || rowText.includes(textoActual);
-          
-          // Condición 2: ¿La fila contiene la categoría o estado seleccionado en SweetAlert?
           const cumpleFiltro = filtroActual === 'todos' || rowText.includes(filtroActual.toLowerCase());
 
-          // LA MAGIA: Solo mostramos la fila si cumple AMBAS condiciones
           if (cumpleTexto && cumpleFiltro) {
             row.style.display = ''; 
           } else {
@@ -361,13 +343,11 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
         });
       }
 
-      // 3. Evento al teclear (solo actualiza la variable de texto y llama a la función maestra)
       searchInput.addEventListener('keyup', function(e) {
         textoActual = e.target.value.toLowerCase();
         aplicarFiltros();
       });
       
-      // 4. Evento del botón de SweetAlert (solo actualiza la variable del filtro y llama a la maestra)
       const filterBtn = document.querySelector('.filter-btn');
       if(filterBtn) {
         filterBtn.addEventListener('click', async function(e) {
@@ -386,10 +366,16 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
                   'Antibióticos': 'Ver categoría: Antibióticos',
                   'Analgésicos': 'Ver categoría: Analgésicos',
                   'Alergias': 'Ver categoría: Alergias',
-                  'Gastrointestinal': 'Ver categoría: Gastrointestinal'
+                  'Gastrointestinal': 'Ver categoría: Gastrointestinal',
+                  'Cardiología': 'Ver categoría: Cardiología',
+                  'Respiratorio': 'Ver categoría: Respiratorio',
+                  'Dermatología': 'Ver categoría: Dermatología',
+                  'Vitaminas': 'Ver categoría: Vitaminas',
+                  'Insumos Médicos': 'Ver categoría: Insumos Médicos',
+                  'Antimicóticos': 'Ver categoría: Antimicóticos'
                 },
                 'Mostrar todo': {
-                  'todos': '🔄 Mostrar todos los productos'
+                  'todos': '🔄 Mostrar todo el inventario'
                 }
               },
               inputPlaceholder: 'Selecciona una opción...',
@@ -401,10 +387,9 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
             });
 
             if (filtroSeleccionado) {
-              filtroActual = filtroSeleccionado; // Guardamos el filtro
-              aplicarFiltros(); // Aplicamos la magia
+              filtroActual = filtroSeleccionado;
+              aplicarFiltros(); 
 
-              // Pequeña notificación visual
               let mensaje = filtroActual === 'todos' ? 'Mostrando todo el inventario' : 'Filtro aplicado exitosamente';
               Swal.fire({
                 toast: true,
@@ -419,7 +404,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
       }
     });
 
-    // --- LÓGICA PARA LEER LA URL Y MOSTRAR ÉXITOS CON SWEETALERT ---
+    // --- LÓGICA PARA LEER LA URL Y MOSTRAR ÉXITOS ---
     document.addEventListener("DOMContentLoaded", function() {
       const urlParams = new URLSearchParams(window.location.search);
       const status = urlParams.get('status');
@@ -448,15 +433,14 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
           title: titulo,
           text: texto,
           icon: icono,
-          confirmButtonColor: '#3b9b4a', 
-          draggable: true
+          confirmButtonColor: '#3b9b4a'
         });
 
         window.history.replaceState(null, null, window.location.pathname);
       }
     });
 
-    // --- LÓGICA PARA ELIMINAR (CONFIRMACIÓN SWEETALERT) ---
+    // --- LÓGICA PARA ELIMINAR ---
     function eliminarProducto(id) {
       Swal.fire({
         title: '¿Estás seguro?',
