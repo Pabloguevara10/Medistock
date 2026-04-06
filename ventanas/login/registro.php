@@ -75,5 +75,39 @@
       </form>
     </main>
   </div>
+  <script src="../../fonds/sweetalert.cjs"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const status = urlParams.get('status');
+
+      if (status) {
+        let config = { icon: 'error', confirmButtonColor: '#d33' };
+
+        if (status === 'error_empty') {
+          config.title = 'Campos incompletos';
+          config.text = 'Todos los campos marcados son obligatorios.';
+        } else if (status === 'error_password_match') {
+          config.title = 'Contraseñas no coinciden';
+          config.text = 'Asegúrate de escribir la misma contraseña en ambos campos.';
+        } else if (status === 'error_email_exists') {
+          config.title = 'Correo ya registrado';
+          config.text = 'Este correo electrónico ya pertenece a otro usuario de MediStock.';
+        } else if (status === 'error_cedula_exists') {
+          config.title = 'Cédula ya registrada';
+          config.text = 'Este número de documento ya se encuentra en nuestra base de datos.';
+        } else if (status === 'error_db') {
+          config.title = 'Error de conexión';
+          config.text = 'No se pudo completar el registro. Inténtalo más tarde.';
+        }
+
+        if (config.title) {
+          Swal.fire(config);
+        }
+
+        window.history.replaceState(null, null, window.location.pathname);
+      }
+    });
+  </script>
 </body>
 </html>

@@ -2,7 +2,6 @@
 require 'conexion.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     $nombre = trim($_POST['nombre']);
     $apellido = trim($_POST['apellido']);
     $tipo_doc = $_POST['tipo_doc'];
@@ -13,47 +12,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Validaciones básicas
+    // Validamos que no haya campos vacíos sin mostrar rutas
     if (empty($nombre) || empty($apellido) || empty($cedula) || empty($email) || empty($password) || empty($rol)) {
-        die("<script>alert('Por favor, completa todos los campos obligatorios.'); window.history.back();</script>");
+        header("Location: ../registro.php?status=error_empty");
+        exit();
     }
 
     if ($password !== $confirm_password) {
-        die("<script>alert('Las contraseñas no coinciden.'); window.history.back();</script>");
-    }
-
-    // Verificar si la cédula o el email ya existen
-    $stmt_check = $conn->prepare("SELECT id FROM usuarios WHERE email = ? OR cedula = ?");
-    $stmt_check->bind_param("ss", $email, $cedula);
-    $stmt_check->execute();
-    $stmt_check->store_result();
-
-    if ($stmt_check->num_rows > 0) {
-        echo "<script>alert('Error: El correo electrónico o la cédula ya están registrados.'); window.history.back();</script>";
-        $stmt_check->close();
+        header("Location: ../registro.php?status=error_password_match");
         exit();
     }
-    $stmt_check->close();
 
-    // Encriptar la contraseña
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insertar en MediStock
+    // Intentamos la inserción directamente. Los campos UNIQUE en SQL protegerán la integridad.
     $stmt = $conn->prepare("INSERT INTO usuarios (tipo_doc, cedula, nombre, apellido, email, telefono, password, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssssss", $tipo_doc, $cedula, $nombre, $apellido, $email, $telefono, $hashed_password, $rol);
 
-    if ($stmt->execute()) {
-        // REDIRECCIÓN CORREGIDA: Salimos de php/ y volvemos al login.php
-        echo "<script>alert('¡Personal registrado exitosamente!'); window.location.href='../login.php';</script>";
-    } else {
-        echo "<script>alert('Error al registrar: " . $stmt->error . "'); window.history.back();</script>";
+    try {
+        if ($stmt->execute()) {
+            header("Location: ../login.php?status=success_registro");
+            exit();
+        }
+    } catch (mysqli_sql_exception $e) {
+        // Error 1062 es el código de MySQL para "Entrada duplicada"
+        if ($e->getCode() === 1062) {
+            // Verificamos qué campo falló para ser específicos sin exponer la estructura
+            if (str_contains($e->getMessage(), 'email')) {
+                header("Location: ../registro.php?status=error_email_exists");
+            } elseif (str_contains($e->getMessage(), 'cedula')) {
+                header("Location: ../registro.php?status=error_cedula_exists");
+            } else {
+                header("Location: ../registro.php?status=error_exists");
+            }
+        } else {
+            // Error genérico de base de datos para no dar pistas a un atacante
+            header("Location: ../registro.php?status=error_db");
+        }
+        exit();
     }
 
     $stmt->close();
     $conn->close();
 } else {
-    // REDIRECCIÓN CORREGIDA
-    header("Location: ../registro.html");
+    header("Location: ../registro.php");
     exit();
 }
 ?>
