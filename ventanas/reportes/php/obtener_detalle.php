@@ -1,5 +1,16 @@
 <?php
+session_start();
 require '../../login/php/conexion.php';
+
+// ====================================================================
+// SEGURIDAD: Bloquear acceso si no hay sesión iniciada
+// ====================================================================
+if (!isset($_SESSION['user_id'])) {
+    header('Content-Type: application/json');
+    echo json_encode(['error' => true, 'mensaje' => 'Acceso no autorizado']);
+    exit();
+}
+
 header('Content-Type: application/json');
 
 if (isset($_GET['id'])) {

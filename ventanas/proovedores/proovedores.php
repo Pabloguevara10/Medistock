@@ -12,7 +12,7 @@ require '../login/php/conexion.php';
 $query_proveedores = "SELECT * FROM proveedores ORDER BY id DESC";
 $resultado_proveedores = $conn->query($query_proveedores);
 
-// 2. Obtenemos el inventario de productos (Incluyendo PRECIO DE COMPRA para los cálculos)
+// 2. Obtenemos el inventario de productos
 $query_productos = "SELECT id, nombre, categoria, presentacion, stock, precio_compra FROM productos";
 $resultado_productos = $conn->query($query_productos);
 $inventario_productos = [];
@@ -337,6 +337,17 @@ if($resultado_productos) {
       if (e.target == pedidoModal) pedidoModal.classList.remove('active');
     }
 
+    // --- SEGURIDAD APLICADA: Función para prevenir DOM XSS en JS ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str.toString().replace(/[&<>'"]/g, function(tag) {
+            const charsToReplace = {
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            };
+            return charsToReplace[tag] || tag;
+        });
+    }
+
     // 3. FUNCIONES DE DATOS
     function abrirModalEditarProveedor(p) {
       document.getElementById('edit_id').value = p.id;
@@ -349,11 +360,12 @@ if($resultado_productos) {
       editModal.classList.add('active');
     }
 
-    const todosLosProductos = <?php echo json_encode($inventario_productos); ?>;
+    // SEGURIDAD APLICADA: Banderas estrictas de protección en JSON contra escape de tags JS
+    const todosLosProductos = <?php echo json_encode($inventario_productos, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 
     function abrirModalPedido(proveedor) {
-      document.getElementById('pedidoModalTitle').innerText = 'PEDIDO: ' + proveedor.nombre.toUpperCase();
-      document.getElementById('pedidoModalSubtitle').innerText = proveedor.categorias;
+      document.getElementById('pedidoModalTitle').innerText = 'PEDIDO: ' + escapeHTML(proveedor.nombre).toUpperCase();
+      document.getElementById('pedidoModalSubtitle').innerText = escapeHTML(proveedor.categorias);
       document.getElementById('pedido_proveedor_id').value = proveedor.id;
 
       const lista = document.getElementById('listaProductosPedido');
@@ -372,9 +384,11 @@ if($resultado_productos) {
               const stockCritico = prod.stock <= 10;
               const row = document.createElement('div');
               row.className = 'pedido-row';
+              
+              // SEGURIDAD APLICADA: Usamos escapeHTML en la variable prod.nombre al inyectar DOM
               row.innerHTML = `
                   <div>
-                      <strong style="color:#1e293b;">${prod.nombre}</strong><br>
+                      <strong style="color:#1e293b;">${escapeHTML(prod.nombre)}</strong><br>
                       <span style="font-size:11px; color:${stockCritico ? '#d33' : '#64748b'}; font-weight:600;">
                         Inv: ${prod.stock} uds. ${stockCritico ? '(BAJO)' : ''}
                       </span>

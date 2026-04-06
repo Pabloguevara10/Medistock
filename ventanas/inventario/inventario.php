@@ -100,7 +100,7 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
                   if ($alerta['estado'] == 'Vencido') {
                       $mensaje = "🚨 <b>¡Vencido!</b> " . htmlspecialchars($alerta['nombre']);
                   } else {
-                      $mensaje = "⚠️ <b>Stock bajo:</b> " . htmlspecialchars($alerta['nombre']) . " (Quedan " . $alerta['stock'] . ")";
+                      $mensaje = "⚠️ <b>Stock bajo:</b> " . htmlspecialchars($alerta['nombre']) . " (Quedan " . htmlspecialchars($alerta['stock']) . ")";
                   }
                   echo "<div class='alert-box' style='padding: 8px 12px; font-size: 14px; margin-top: 8px;'>" . $mensaje . "</div>";
               }
@@ -142,7 +142,6 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
             </thead>
             <tbody>
               <?php
-                // Consultar todos los productos (Eliminamos el require duplicado aquí)
                 $query = "SELECT * FROM productos ORDER BY id DESC";
                 $resultado = $conn->query($query);
 
@@ -172,7 +171,8 @@ $alertas = $conn->query("SELECT nombre, stock, estado FROM productos WHERE stock
                         echo "<td>" . date("d/m/Y", strtotime($row['fecha_llegada'])) . "</td>";
                         echo "<td>" . date("d/m/Y", strtotime($row['fecha_vencimiento'])) . "</td>";
                         
-                        echo "<td><span class='badge " . $clase_estado . "'>" . $row['estado'] . "</span></td>";
+                        // SEGURIDAD APLICADA: Blindamos también el estado, por regla de Cero Confianza
+                        echo "<td><span class='badge " . $clase_estado . "'>" . htmlspecialchars($row['estado']) . "</span></td>";
                         
                         $datos_json = htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8');
 

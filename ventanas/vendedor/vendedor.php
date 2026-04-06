@@ -53,14 +53,19 @@ if (isset($_GET['vaciar'])) {
 $total_venta = 0;
 foreach ($_SESSION['carrito'] as $item) { $total_venta += $item['precio'] * $item['cantidad']; }
 
-// Lógica de búsqueda de productos
-$busqueda = isset($_GET['q']) ? $conn->real_escape_string($_GET['q']) : '';
-$query_prod = "SELECT * FROM productos WHERE stock > 0";
+// Lógica de búsqueda de productos (SEGURIDAD: Uso de sentencias preparadas para el buscador)
+$busqueda = isset($_GET['q']) ? trim($_GET['q']) : '';
+
 if ($busqueda !== '') {
-    $query_prod .= " AND (nombre LIKE '%$busqueda%' OR codigo LIKE '%$busqueda%')";
+    $sql = "SELECT * FROM productos WHERE stock > 0 AND (nombre LIKE ? OR codigo LIKE ?) ORDER BY nombre ASC";
+    $stmt = $conn->prepare($sql);
+    $parametro_busqueda = "%" . $busqueda . "%";
+    $stmt->bind_param("ss", $parametro_busqueda, $parametro_busqueda);
+    $stmt->execute();
+    $productos = $stmt->get_result();
+} else {
+    $productos = $conn->query("SELECT * FROM productos WHERE stock > 0 ORDER BY nombre ASC");
 }
-$query_prod .= " ORDER BY nombre ASC";
-$productos = $conn->query($query_prod);
 ?>
 
 <!DOCTYPE html>
@@ -71,7 +76,6 @@ $productos = $conn->query($query_prod);
   <link rel="stylesheet" href="../../css/globals.css" /> 
   <link rel="stylesheet" href="../../css/style.css" />
   <style>
-    /* Estilos mejorados para que no se rompa el diseño */
     .step-container { 
         display: flex; flex-direction: column; align-items: center; justify-content: center; 
         background: white; border-radius: 12px; border: 1px solid #e2e8f0; 
@@ -94,7 +98,6 @@ $productos = $conn->query($query_prod);
         background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
         height: 72vh; display: flex; flex-direction: column; border: 1px solid #e2e8f0;
     }
-    /* Scrollbar estilizada para la lista de productos */
     .product-list::-webkit-scrollbar { width: 6px; }
     .product-list::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px;}
     .product-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px;}
@@ -109,8 +112,8 @@ $productos = $conn->query($query_prod);
         <img class="texto" src="../../img/tipografia.png" alt="MediStock" />
       </div>
       <div class="header-user">
-        <div class="user-avatar"><?php echo substr($_SESSION['rol'], 0, 1); ?></div>
-        <span><?php echo $_SESSION['nombre_completo']; ?></span>
+        <div class="user-avatar"><?php echo htmlspecialchars(substr($_SESSION['rol'], 0, 1)); ?></div>
+        <span><?php echo htmlspecialchars($_SESSION['nombre_completo']); ?></span>
       </div>
     </header>
 
@@ -161,8 +164,8 @@ $productos = $conn->query($query_prod);
         <div class="client-bar">
             <div>
                 <span style="color: #166534; font-size: 14px;">Atendiendo a:</span>
-                <strong style="color: #1e293b; margin-left: 5px; font-size: 15px;"><?php echo $_SESSION['cliente_actual']['nombre'] . " " . $_SESSION['cliente_actual']['apellido']; ?></strong>
-                <span style="color: #64748b; font-size: 13px; margin-left: 10px;">(V-<?php echo $_SESSION['cliente_actual']['cedula']; ?>)</span>
+                <strong style="color: #1e293b; margin-left: 5px; font-size: 15px;"><?php echo htmlspecialchars($_SESSION['cliente_actual']['nombre'] . " " . $_SESSION['cliente_actual']['apellido']); ?></strong>
+                <span style="color: #64748b; font-size: 13px; margin-left: 10px;">(V-<?php echo htmlspecialchars($_SESSION['cliente_actual']['cedula']); ?>)</span>
             </div>
             <a href="vendedor.php?cambiar_cliente=1" style="color: #ef4444; font-size: 13px; font-weight: bold; text-decoration: none;">Cambiar Cliente 🔄</a>
         </div>
@@ -243,7 +246,7 @@ $productos = $conn->query($query_prod);
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../../fonds/sweetalert.cjs"></script>
   <script>
     // --- LÓGICA DE ALERTAS Y REDIRECCIONES ---
     document.addEventListener("DOMContentLoaded", function() {
@@ -271,9 +274,8 @@ $productos = $conn->query($query_prod);
         }
     });
 
-    // --- BUSCADOR Y REGISTRO DE CLIENTE (PASO 1) ---
     function buscarCliente(e) {
-        if(e) e.preventDefault(); // Evita recargar la página al presionar Enter
+        if(e) e.preventDefault(); 
 
         const cedula = document.getElementById('id_busqueda').value.trim();
         if (cedula === '') return;
@@ -282,10 +284,8 @@ $productos = $conn->query($query_prod);
         .then(response => response.json())
         .then(data => {
             if (data.encontrado) {
-                // Cliente encontrado, recargamos para entrar al Paso 2
                 location.reload();
             } else {
-                // Cliente no existe, abrimos Modal de Registro
                 Swal.fire({
                     title: 'Nuevo Cliente',
                     html: `
@@ -324,7 +324,6 @@ $productos = $conn->query($query_prod);
         .catch(error => console.error('Error:', error));
     }
 
-    // --- GUARDAR NUEVO CLIENTE AJAX ---
     function registrarCliente(datos) {
         fetch('php/registrar_cliente_ajax.php', {
             method: 'POST',
@@ -334,14 +333,13 @@ $productos = $conn->query($query_prod);
         .then(response => response.json())
         .then(res => {
             if (res.success) { 
-                location.reload(); // Recarga para entrar al Paso 2
+                location.reload(); 
             } else { 
                 Swal.fire('Error', 'Hubo un problema registrando al cliente.', 'error'); 
             }
         });
     }
 
-    // --- PROCESAR LA VENTA (CORRECCIÓN DEL BUG) ---
     function procesarVenta() {
         Swal.fire({
             title: '¿Confirmar cobro?',
@@ -354,7 +352,6 @@ $productos = $conn->query($query_prod);
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Ahora sí enviamos un POST usando el formulario oculto
                 document.getElementById('form-venta-final').submit();
             }
         });

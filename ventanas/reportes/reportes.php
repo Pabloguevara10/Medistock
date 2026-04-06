@@ -28,7 +28,10 @@ $resultado = $conn->query($sql_ventas);
             <img class="logo" src="../../img/logo.png" />
             <img class="texto" src="../../img/tipografia.png" />
           </div>
-          <div class="header-user"><div class="user-avatar">A</div><span><?php echo $_SESSION['nombre_completo']; ?></span></div>
+          <div class="header-user">
+            <div class="user-avatar">A</div>
+            <span><?php echo htmlspecialchars($_SESSION['nombre_completo']); ?></span>
+          </div>
         </header>
 
         <aside class="sidebar">
@@ -62,7 +65,7 @@ $resultado = $conn->query($sql_ventas);
                                 <tr>
                                     <td><strong>#<?php echo str_pad($v['recibo'], 5, "0", STR_PAD_LEFT); ?></strong></td>
                                     <td><?php echo date("d/m/Y - h:i A", strtotime($v['fecha_venta'])); ?></td>
-                                    <td><?php echo htmlspecialchars($v['nombre_cliente']); ?><br><small>V-<?php echo $v['cedula_cliente']; ?></small></td>
+                                    <td><?php echo htmlspecialchars($v['nombre_cliente']); ?><br><small>V-<?php echo htmlspecialchars($v['cedula_cliente']); ?></small></td>
                                     <td><?php echo htmlspecialchars($v['vendedor_nombre'] . ' ' . $v['vendedor_apellido']); ?></td>
                                     <td style="color:#3b9b4a; font-weight:bold;">$<?php echo number_format($v['total_venta'], 2); ?></td>
                                     <td>
@@ -79,8 +82,16 @@ $resultado = $conn->query($sql_ventas);
 
     <script src="../../fonds/sweetalert.cjs"></script>
     <script>
+        // Función de seguridad para purificar texto y evitar DOM XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString().replace(/[&<>'"]/g, function(tag) {
+                const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' };
+                return charsToReplace[tag] || tag;
+            });
+        }
+
         function verFactura(id_venta) {
-            // Llamamos al backend por AJAX para traer los detalles de los productos
             fetch('php/obtener_detalle.php?id=' + id_venta)
             .then(response => response.json())
             .then(data => {
@@ -89,7 +100,6 @@ $resultado = $conn->query($sql_ventas);
                     return;
                 }
 
-                // Armamos el HTML del recibo estilo Ticket de compra
                 let htmlRecibo = `
                     <div style="text-align:left; font-family: monospace; font-size: 14px; background: #f8fafc; padding: 20px; border: 1px dashed #cbd5e1; border-radius: 5px;">
                         <div style="text-align:center; margin-bottom: 15px; border-bottom: 1px dashed #94a3b8; padding-bottom: 10px;">
@@ -105,10 +115,11 @@ $resultado = $conn->query($sql_ventas);
                 `;
                 
                 data.detalles.forEach(item => {
+                    // SEGURIDAD: Escapamos el nombre del producto que viene de la BD
                     htmlRecibo += `
                         <tr>
-                            <td style="padding: 5px 0;">${item.cantidad}</td>
-                            <td style="padding: 5px 0;">${item.nombre_producto}</td>
+                            <td style="padding: 5px 0;">${escapeHTML(item.cantidad)}</td>
+                            <td style="padding: 5px 0;">${escapeHTML(item.nombre_producto)}</td>
                             <td style="text-align:right; padding: 5px 0;">$${parseFloat(item.subtotal).toFixed(2)}</td>
                         </tr>
                     `;

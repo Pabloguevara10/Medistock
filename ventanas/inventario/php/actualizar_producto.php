@@ -1,7 +1,15 @@
 <?php
 session_start();
-// OJO: Ajusta esta ruta
 require '../../login/php/conexion.php'; 
+
+// ====================================================================
+// SEGURIDAD: Verificar que el usuario esté autenticado y sea Administrador
+// ====================================================================
+if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'Administrador') {
+    // Si no es admin o no está logueado, lo expulsamos inmediatamente
+    header("Location: ../../login/login.php?status=unauthorized");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
@@ -33,20 +41,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             WHERE id = ?";
             
     $stmt = $conn->prepare($sql);
-    // Agregamos una 'i' extra al final para el ID
     $stmt->bind_param("ssssiddssssi", $codigo, $nombre, $categoria, $presentacion, $stock, $precio_compra, $precio_venta, $laboratorio, $fecha_llegada, $fecha_vencimiento, $estado, $id);
 
     if ($stmt->execute()) {
         header("Location: ../inventario.php?status=updated");
-        exit();
     } else {
         header("Location: ../inventario.php?status=error");
-        exit();
     }
 
     $stmt->close();
     $conn->close();
+    exit();
 } else {
     header("Location: ../inventario.php");
+    exit();
 }
-?> 
+?>

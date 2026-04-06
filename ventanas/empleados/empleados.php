@@ -28,7 +28,7 @@ $resultado = $conn->query($query_emp);
           </div>
           <div class="header-user">
             <div class="user-avatar">A</div>
-            <span><?php echo $_SESSION['nombre_completo']; ?></span>
+            <span><?php echo htmlspecialchars($_SESSION['nombre_completo']); ?></span>
           </div>
         </header>
 

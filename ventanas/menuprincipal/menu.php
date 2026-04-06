@@ -132,7 +132,7 @@ if($resultado_categorias) {
       </div>
       <div class="header-user">
         <div class="user-avatar">Ad</div>
-        <span>Administrador</span>
+        <span><?php echo htmlspecialchars($_SESSION['nombre_completo'] ?? 'Administrador'); ?></span>
       </div>
     </header>
 
@@ -153,7 +153,7 @@ if($resultado_categorias) {
       <a href="../empleados/empleados.php" class="sidebar-item" style="color: inherit; text-decoration: none;">
         <img src="../../img/empleados.png" alt="" /> <span>Empleados</span>
       </a>
-      <a href="../login/login.html" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
+      <a href="../login/login.php" class="sidebar-item logout-btn" style="color: inherit; text-decoration: none;">
         <img src="../../img/salir.png" alt="" /> <span>Salir</span>
       </a>
     </aside>
@@ -183,7 +183,7 @@ if($resultado_categorias) {
         <div class="dashboard-main-area">
           <div class="welcome-banner">
             <div class="welcome-text">
-              <h2>¡Hola de nuevo, <?php echo isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : 'Administrador'; ?>! 👋</h2>
+              <h2>¡Hola de nuevo, <?php echo htmlspecialchars($_SESSION['nombre_completo'] ?? 'Administrador'); ?>! 👋</h2>
               <p>Aquí tienes un resumen del estado actual de tu farmacia. Todo está funcionando correctamente.</p>
             </div>
             <div>
@@ -198,17 +198,17 @@ if($resultado_categorias) {
             <a href="../proovedores/proovedores.php" class="action-card">
               <img src="../../img/camion.png" alt=""><br>Ver Proveedores
             </a>
-            <a href="#" class="action-card">
+            <a href="../reportes/reportes.php" class="action-card">
               <img src="../../img/report.png" alt=""><br>Generar Reportes
             </a>
           </div>
 
           <div class="dashboard-box">
-            <div class="box-header">📊 Distribución de .. por Categoría</div>
+            <div class="box-header">📊 Distribución de Productos por Categoría</div>
             <div class="chart-container">
               <?php if (empty($categorias_nombres)): ?>
                   <div style="display:flex; height:100%; align-items:center; justify-content:center; color:#64748b;">
-                      Aún no hay productos registrados en el ...
+                      Aún no hay productos registrados en el sistema.
                   </div>
               <?php else: ?>
                   <canvas id="categoriasChart"></canvas>
@@ -235,7 +235,7 @@ if($resultado_categorias) {
                   }
               }
               if ($total_criticos > 4) {
-                  echo "<div style='text-align:center; margin-top:15px;'><a href='../../...php' style='color:#3b7d85; font-size:13px; font-weight:bold;'>Ver todas las alertas &rarr;</a></div>";
+                  echo "<div style='text-align:center; margin-top:15px;'><a href='../inventario/inventario.php' style='color:#3b7d85; font-size:13px; font-weight:bold;'>Ver todas las alertas &rarr;</a></div>";
               }
           } else {
               echo "<div style='text-align:center; padding: 30px 10px; color:#64748b; font-size: 14px;'>";
@@ -252,11 +252,13 @@ if($resultado_categorias) {
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const nombres = <?php echo json_encode($categorias_nombres); ?>;
-        const cantidades = <?php echo json_encode($categorias_cantidades); ?>;
+        // SEGURIDAD: Previene ejecución de scripts maliciosos en los nombres de categorías
+        const nombres = <?php echo json_encode($categorias_nombres, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+        const cantidades = <?php echo json_encode($categorias_cantidades, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+        
         const ctxElement = document.getElementById('categoriasChart');
         
-        if (ctxElement) {
+        if (ctxElement && nombres.length > 0) {
             const ctx = ctxElement.getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut', 
@@ -265,7 +267,7 @@ if($resultado_categorias) {
                     datasets: [{
                         label: 'Productos Registrados',
                         data: cantidades,
-                        backgroundColor: ['#3b7d85', '#3b9b4a', '#f59e0b', '#64748b', '#0ea5e9', '#1e293b'],
+                        backgroundColor: ['#3b7d85', '#3b9b4a', '#f59e0b', '#64748b', '#0ea5e9', '#1e293b', '#ef4444', '#8b5cf6'],
                         borderWidth: 2,
                         borderColor: '#ffffff',
                         hoverOffset: 4

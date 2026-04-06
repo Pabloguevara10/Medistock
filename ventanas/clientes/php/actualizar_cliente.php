@@ -2,8 +2,16 @@
 session_start();
 require '../../login/php/conexion.php';
 
+// ====================================================================
+// SEGURIDAD: Verificar que el usuario esté autenticado y sea Administrador
+// ====================================================================
+if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'Administrador') {
+    header("Location: ../../login/login.php?status=unauthorized");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = intval($_POST['id']);
+    $id = intval($_POST['id']); // Protección: Forzamos a que sea un número entero
     $cedula = trim($_POST['cedula']);
     $nombre = trim($_POST['nombre']);
     $apellido = trim($_POST['apellido']);
@@ -27,6 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } catch (Exception $e) {
         header("Location: ../clientes.php?status=error");
     }
+    $conn->close();
+    exit();
+} else {
+    header("Location: ../clientes.php");
+    exit();
 }
-$conn->close();
 ?>

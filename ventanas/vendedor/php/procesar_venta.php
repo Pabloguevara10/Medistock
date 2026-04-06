@@ -23,9 +23,15 @@ try {
     $stmt->execute();
     $factura = $conn->insert_id;
 
-    // Guardar detalles de la factura y descontar stock
+    // Guardar detalles de la factura
     $sql_detalle = "INSERT INTO ventas_detalle (id_venta, id_producto, nombre_producto, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt_det = $conn->prepare($sql_detalle);
+
+    // ====================================================================
+    // CORRECCIÓN DE SEGURIDAD: Preparamos el UPDATE del stock
+    // ====================================================================
+    $sql_update_stock = "UPDATE productos SET stock = stock - ? WHERE id = ?";
+    $stmt_stock = $conn->prepare($sql_update_stock);
 
     foreach ($_SESSION['carrito'] as $i) {
         $subtotal_item = $i['precio'] * $i['cantidad'];
@@ -34,9 +40,15 @@ try {
         $stmt_det->bind_param("iisidd", $factura, $i['id'], $i['nombre'], $i['cantidad'], $i['precio'], $subtotal_item);
         $stmt_det->execute();
 
-        // 2. Descontar del inventario
-        $conn->query("UPDATE productos SET stock = stock - {$i['cantidad']} WHERE id = {$i['id']}");
+        // 2. Descontar del inventario de forma 100% segura
+        $stmt_stock->bind_param("ii", $i['cantidad'], $i['id']);
+        $stmt_stock->execute();
     }
+    
+    // Cerramos los statements por buenas prácticas
+    $stmt_stock->close();
+    $stmt_det->close();
+    $stmt->close();
 
     $conn->commit();
     $_SESSION['carrito'] = [];
@@ -46,3 +58,4 @@ try {
     $conn->rollback();
     header("Location: ../vendedor.php?status=error_db");
 }
+?>

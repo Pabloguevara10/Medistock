@@ -30,8 +30,8 @@ $resultado = $conn->query($query_clientes);
             <img class="texto" src="../../img/tipografia.png" alt="MediStock" />
           </div>
           <div class="header-user">
-            <div class="user-avatar"><?php echo substr($_SESSION['rol'], 0, 1); ?></div>
-            <span><?php echo $_SESSION['nombre_completo']; ?></span>
+            <div class="user-avatar"><?php echo htmlspecialchars(substr($_SESSION['rol'], 0, 1)); ?></div>
+            <span><?php echo htmlspecialchars($_SESSION['nombre_completo']); ?></span>
           </div>
         </header>
 
